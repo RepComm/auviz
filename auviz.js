@@ -29,6 +29,7 @@ calcDims();
 let freqData;
 let audioStream;
 let safeToGetFreq = false;
+let visualizerColor = "#88f";
 
 let gainCtrl = get("gainSlider");
 gainCtrl.addEventListener("change", ()=>{
@@ -70,21 +71,38 @@ let render = () => {
 
   ctx.save();
   ctx.translate(cRect.width / 2, cRect.height / 2);
+  ctx.rotate(Math.PI/2);
   ctx.beginPath();
   let x, y, r;
   for (let i = 0; i < freqData.length; i++) {
     r = lerp(circleRadius/12, circleRadius, freqData[i]/256);
-    x = r * Math.cos(i / freqData.length * 4*Math.PI);
-    y = r * Math.sin(i / freqData.length * 4*Math.PI);
+    x = r * Math.cos(i / freqData.length * 2*Math.PI);
+    y = r * Math.sin(i / freqData.length * 2*Math.PI);
     if (i === 0) {
       ctx.moveTo(x, y);
     } else {
       ctx.lineTo(x, y);
     }
   }
-  ctx.closePath();
-  //ctx.stroke();
-  ctx.fillStyle = "#336";
+
+  //ctx.closePath();
+  ctx.fillStyle = visualizerColor;
+  ctx.fill();
+
+  ctx.scale(1,-1);
+  ctx.beginPath();
+
+  for (let i = 0; i < freqData.length; i++) {
+    r = lerp(circleRadius/12, circleRadius, freqData[i]/256);
+    x = r * Math.cos(i / freqData.length * 2*Math.PI);
+    y = r * Math.sin(i / freqData.length * 2*Math.PI);
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  }
+  //ctx.closePath();
   ctx.fill();
   ctx.restore();
 
