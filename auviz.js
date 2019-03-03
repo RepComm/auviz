@@ -1,4 +1,4 @@
-try {
+
 let get = (id) => document.getElementById(id);
 let rect = (e) => e.getBoundingClientRect();
 let lerp = (a, b, c) => a + c * (b - a);
@@ -9,8 +9,8 @@ let cRect = rect(canvas);
 let audioCtx = new AudioContext();
 let analyser = audioCtx.createAnalyser();
 let gain = audioCtx.createGain();
-analyser.smoothingTimeConstant = 0.5;
-analyser.fftSize = 512;
+analyser.smoothingTimeConstant = 0.2;
+analyser.fftSize = 1024;
 
 let circleRadius = cRect.width / 4;
 
@@ -55,6 +55,9 @@ let start = () => {
 
 start();
 
+let averageAmp = 0;
+let hexVal = "ff";
+
 let render = () => {
 
   ctx.fillStyle = "#000";
@@ -75,9 +78,10 @@ let render = () => {
   ctx.beginPath();
   let x, y, r;
   for (let i = 0; i < freqData.length; i++) {
+    averageAmp += freqData[i];
     r = lerp(circleRadius/12, circleRadius, freqData[i]/256);
-    x = r * Math.cos(i / freqData.length * 2*Math.PI);
-    y = r * Math.sin(i / freqData.length * 2*Math.PI);
+    x = r * Math.cos(i / freqData.length * Math.PI);
+    y = r * Math.sin(i / freqData.length * Math.PI);
     if (i === 0) {
       ctx.moveTo(x, y);
     } else {
@@ -85,8 +89,15 @@ let render = () => {
     }
   }
 
-  //ctx.closePath();
-  ctx.fillStyle = visualizerColor;
+  //ctx.stroke();
+  hexVal = parseInt(( averageAmp / freqData.length )).toString(16);
+  //console.log(hexVal);
+  if (hexVal.length === 2) {
+    ctx.fillStyle = "#" + hexVal + hexVal + hexVal;
+  } else {
+    hexVal = "0" + hexVal;
+    ctx.fillStyle = "#" + hexVal + hexVal + hexVal;
+  }
   ctx.fill();
 
   ctx.scale(1,-1);
@@ -94,22 +105,20 @@ let render = () => {
 
   for (let i = 0; i < freqData.length; i++) {
     r = lerp(circleRadius/12, circleRadius, freqData[i]/256);
-    x = r * Math.cos(i / freqData.length * 2*Math.PI);
-    y = r * Math.sin(i / freqData.length * 2*Math.PI);
+    x = r * Math.cos(i / freqData.length * Math.PI);
+    y = r * Math.sin(i / freqData.length * Math.PI);
     if (i === 0) {
       ctx.moveTo(x, y);
     } else {
       ctx.lineTo(x, y);
     }
   }
-  //ctx.closePath();
+  averageAmp = 0;
   ctx.fill();
+  //ctx.stroke();
   ctx.restore();
 
   requestAnimationFrame(render);
 }
 
 requestAnimationFrame(render);
-} catch (ex) {
-
-}
