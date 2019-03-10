@@ -1,8 +1,10 @@
 
+//Alias functions cause browser API is too long..
 let get = (id) => document.getElementById(id);
 let rect = (e) => e.getBoundingClientRect();
 let lerp = (a, b, c) => a + c * (b - a);
 
+//Audio and canvas
 let canvas = get("canvas");
 let ctx = canvas.getContext("2d");
 let cRect = rect(canvas);
@@ -14,6 +16,7 @@ analyser.fftSize = 1024;
 
 let circleRadius = cRect.width / 4;
 
+//Recalculate dimensions for rendering
 let calcDims = () => {
   cRect = rect(canvas);
   cRect.smallest = cRect.width > cRect.height ? cRect.height : cRect.width;
@@ -24,7 +27,7 @@ let calcDims = () => {
 }
 
 window.addEventListener("resize", calcDims);
-calcDims();
+calcDims(); //Force recalc once
 
 let freqData;
 let audioStream;
@@ -70,6 +73,7 @@ let render = () => {
     requestAnimationFrame(render);
     return;
   }
+  //Get FFT transformed audio frequency information
   analyser.getByteFrequencyData(freqData);
 
   ctx.save();
