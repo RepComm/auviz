@@ -11,7 +11,7 @@ let cRect = rect(canvas);
 let audioCtx = new AudioContext();
 let analyser = audioCtx.createAnalyser();
 let gain = audioCtx.createGain();
-analyser.smoothingTimeConstant = 0.2;
+analyser.smoothingTimeConstant = 0.7;
 analyser.fftSize = 1024;
 
 let circleRadius = cRect.width / 4;
@@ -83,7 +83,7 @@ let render = () => {
   let x, y, r;
   for (let i = 0; i < freqData.length; i++) {
     averageAmp += freqData[i];
-    r = lerp(circleRadius/12, circleRadius, freqData[i]/256);
+    r = lerp(circleRadius/2, circleRadius, freqData[i]/256);
     x = r * Math.cos(i / freqData.length * Math.PI);
     y = r * Math.sin(i / freqData.length * Math.PI);
     if (i === 0) {
@@ -97,18 +97,21 @@ let render = () => {
   hexVal = parseInt(( averageAmp / freqData.length )).toString(16);
   //console.log(hexVal);
   if (hexVal.length === 2) {
-    ctx.fillStyle = "#" + hexVal + hexVal + hexVal;
+    //ctx.fillStyle = "#" + hexVal + hexVal + "ff";//hexVal;
+    ctx.strokeStyle = "#" + hexVal + hexVal + "ff";//hexVal;
   } else {
     hexVal = "0" + hexVal;
-    ctx.fillStyle = "#" + hexVal + hexVal + hexVal;
+    //ctx.fillStyle = "#" + hexVal + hexVal + "ff"; //hexVal;
+    ctx.strokeStyle = "#" + hexVal + hexVal + "ff"; //hexVal;
   }
-  ctx.fill();
+  //ctx.fill();
+  ctx.stroke();
 
   ctx.scale(1,-1);
   ctx.beginPath();
 
   for (let i = 0; i < freqData.length; i++) {
-    r = lerp(circleRadius/12, circleRadius, freqData[i]/256);
+    r = lerp(circleRadius/2, circleRadius, freqData[i]/256);
     x = r * Math.cos(i / freqData.length * Math.PI);
     y = r * Math.sin(i / freqData.length * Math.PI);
     if (i === 0) {
@@ -118,8 +121,8 @@ let render = () => {
     }
   }
   averageAmp = 0;
-  ctx.fill();
-  //ctx.stroke();
+  //ctx.fill();
+  ctx.stroke();
   ctx.restore();
 
   requestAnimationFrame(render);
